@@ -1,0 +1,5 @@
+{
+  "appId": "com.safedrain.worker",
+  "appName": "safedrain",
+  "webDir": "dist"
+}
