@@ -4,56 +4,49 @@ import GasStatus from "./GasStatus";
 import SOSButton from "./SOSButton";
 import WorkStatus from "./WorkStatus";
 import "./worker.css";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import socket from "../../socket";
 
 const WorkerDashboard = () => {
 
-  const workerId = "W001"; // later get from login/session
+  const [worker, setWorker] = useState(null);
+
   useEffect(() => {
-    // Join as worker
-    socket.emit("join-worker", workerId);
-    const watchId = navigator.geolocation.watchPosition(
-      (pos) => {
-        const locationData = {
-          workerId,
-          latitude: pos.coords.latitude,
-          longitude: pos.coords.longitude
-        };
-        socket.emit("send-location", locationData);
 
-      },
+    // Ask backend for worker session data
+    socket.emit("get-worker-session");
 
-      (err) => {
-        console.error("Location error:", err);
-      },
-
-      {
-        enableHighAccuracy: true,
-        maximumAge: 5000,
-        timeout: 10000
-      }
-    );
-
-    // cleanup
-    return () => {
-      navigator.geolocation.clearWatch(watchId);
-    };
+    socket.once("worker-session-data", (data) => {
+      setWorker(data);
+    });
 
   }, []);
 
+  if (!worker) {
+    return <div>Loading worker data...</div>;
+  }
+
   return (
     <div className="worker-dashboard">
+
       <div className="worker-container">
-        <WorkerHeader />
+
+        <WorkerHeader worker={worker} />
+
+        {/* GPS tracking handled inside LocationMap */}
         <LocationMap />
+
         <GasStatus />
+
         <SOSButton />
+
         <WorkStatus />
+
         <div>Worker Tracking Active</div>
+
       </div>
+
     </div>
   );
 };
-
 export default WorkerDashboard;

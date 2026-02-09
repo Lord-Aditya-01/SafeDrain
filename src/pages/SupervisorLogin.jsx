@@ -1,27 +1,40 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../components/supervisor/supervisor.css";
+import socket from "../socket";
 
 const SupervisorLogin = () => {
+
   const navigate = useNavigate();
+
   const [username, setUsername] = useState("");
   const [password, setPassword] = useState("");
 
   const handleLogin = (e) => {
+
     e.preventDefault();
 
-    // 🔐 Prototype credentials
-    if (username === "supervisor" && password === "admin123") {
-      localStorage.setItem("isSupervisorLoggedIn", "true");
+    // 🚀 Send login request to backend
+    socket.emit("supervisor-login", {
+      username,
+      password
+    });
+
+    // Listen for response
+    socket.once("supervisor-login-success", () => {
       navigate("/supervisor");
-    } else {
+    });
+
+    socket.once("supervisor-login-failed", () => {
       alert("Invalid Supervisor credentials");
-    }
+    });
   };
 
   return (
     <div className="supervisor-login-container">
+
       <form className="supervisor-login-card" onSubmit={handleLogin}>
+
         <h2>Supervisor Login</h2>
 
         <input
@@ -41,7 +54,9 @@ const SupervisorLogin = () => {
         />
 
         <button type="submit">Login</button>
+
       </form>
+
     </div>
   );
 };

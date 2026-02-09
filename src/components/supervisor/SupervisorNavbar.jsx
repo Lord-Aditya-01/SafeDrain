@@ -1,10 +1,18 @@
 import { useNavigate } from "react-router-dom";
+import socket from "../../socket";
 
 const SupervisorNavbar = () => {
   const navigate = useNavigate();
 
   const handleLogout = () => {
-    localStorage.removeItem("supervisorAuth");
+
+    // Notify server supervisor is leaving
+    socket.emit("supervisor-logout");
+
+    // Disconnect socket (clean session)
+    socket.disconnect();
+
+    // Redirect to login
     navigate("/supervisor-login");
   };
 

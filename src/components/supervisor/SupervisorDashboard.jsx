@@ -7,50 +7,63 @@ import "./supervisor.css";
 import socket from "../../socket";
 
 const SupervisorDashboard = () => {
-  
+
   const [workers, setWorkers] = useState({});
   const [selectedWorker, setSelectedWorker] = useState(null);
 
-useEffect(() => {
+  useEffect(() => {
 
-  socket.emit("join-supervisor");
+    // Join supervisor room once
+    socket.emit("join-supervisor");
 
-  const handleInitialWorkers = (data) => {
+    // Initial workers list from server
+    const handleInitialWorkers = (data) => {
 
-    console.log("Initial workers:", data);
+      if (!Array.isArray(data)) return;
 
-    const formatted = {};
+      console.log("Initial workers:", data);
 
-    data.forEach(worker => {
-      formatted[worker.id] = worker;   // ✅ FIX
-    });
+      const formatted = {};
 
-    setWorkers(formatted);
-  };
+      data.forEach(worker => {
+        if (worker?.id) {
+          formatted[worker.id] = worker;
+        }
+      });
 
-  const handleLocation = (data) => {
+      setWorkers(formatted);
+    };
 
-    console.log("Worker location:", data);
+    // Live location updates
+    const handleLocation = (data) => {
 
-    setWorkers(prev => ({
-      ...prev,
-      [data.id]: data   // ✅ FIX
-    }));
+      if (!data?.id) return;
 
-  };
+      console.log("Worker location:", data);
 
-  socket.on("initial-workers", handleInitialWorkers);
-  socket.on("receive-location", handleLocation);
-  return () => {
-    socket.off("initial-workers", handleInitialWorkers);
-    socket.off("receive-location", handleLocation);
-  };
+      setWorkers(prev => ({
+        ...prev,
+        [data.id]: {
+          ...prev[data.id],
+          ...data
+        }
+      }));
+    };
 
-}, []);
-  
+    socket.on("initial-workers", handleInitialWorkers);
+    socket.on("receive-location", handleLocation);
+
+    return () => {
+      socket.off("initial-workers", handleInitialWorkers);
+      socket.off("receive-location", handleLocation);
+    };
+
+  }, []);
+
   return (
     <div className="supervisor-dashboard">
       <SupervisorNavbar />
+
       <div className="supervisor-content">
         <div className="supervisor-map">
           <WorkersMap
@@ -66,9 +79,11 @@ useEffect(() => {
           />
         </div>
       </div>
+
       <SupervisorFooter />
+
       <div>Live Tracking</div>
-      
+
     </div>
   );
 };

@@ -6,9 +6,8 @@ import {
   useMap,
 } from "react-leaflet";
 import "../../services/leafletIconFix";
-import { useEffect, useState } from "react";
+import { useEffect, useRef } from "react";
 import L from "leaflet";
-import { useRef } from "react";
 
 const normalIcon = new L.Icon({
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
@@ -52,7 +51,7 @@ const AutoCenter = ({ workers }) => {
     if (!hasCentered.current && workers.length > 0) {
       map.setView(
         [workers[0].lat, workers[0].lng],
-        map.getZoom() // keep current zoom
+        map.getZoom()
       );
       hasCentered.current = true;
     }
@@ -61,18 +60,7 @@ const AutoCenter = ({ workers }) => {
   return null;
 };
 
-const WorkersMap = ({ selectedWorker }) => {
-  const [workers, setWorkers] = useState([]);
-
-  useEffect(() => {
-    const interval = setInterval(() => {
-      const data =
-        JSON.parse(localStorage.getItem("workersLiveData")) || {};
-      setWorkers(Object.values(data));
-    }, 2000);
-
-    return () => clearInterval(interval);
-  }, []);
+const WorkersMap = ({ workers = [], selectedWorker }) => {
 
   return (
     <div style={{ height: "80vh", borderRadius: "12px", overflow: "hidden" }}>
@@ -94,16 +82,17 @@ const WorkersMap = ({ selectedWorker }) => {
 
         <AutoCenter workers={workers} />
         <FocusWorker worker={selectedWorker} />
+
         {workers.map((worker) => (
           <Marker
             key={worker.id}
             position={[worker.lat, worker.lng]}
             icon={
-            worker.status === "EMERGENCY"
-              ? sosIcon
-              : worker.status === "WARNING"
-              ? warningIcon
-              : normalIcon
+              worker.status === "EMERGENCY"
+                ? sosIcon
+                : worker.status === "WARNING"
+                ? warningIcon
+                : normalIcon
             }
           >
             <Popup>
@@ -116,10 +105,10 @@ const WorkersMap = ({ selectedWorker }) => {
                 style={{
                   color:
                     worker.status === "EMERGENCY"
-                    ? "red"
-                    : worker.status === "WARNING"
-                    ? "orange"
-                    : "green",
+                      ? "red"
+                      : worker.status === "WARNING"
+                      ? "orange"
+                      : "green",
                   fontWeight: "bold",
                 }}
               >

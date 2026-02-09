@@ -1,9 +1,17 @@
-const WorkerList = ({ workers, onSelect }) => {
+const WorkerList = ({ workers = [], onSelect, selectedWorker }) => {
+
+  const getStatusColor = (status) => {
+    if (status === "EMERGENCY") return "#ef4444";
+    if (status === "WARNING") return "#f59e0b";
+    return "#86efac";
+  };
 
   return (
     <div>
 
-      <h3 style={{ marginBottom: "8px" }}>Live Workers</h3>
+      <h3 style={{ marginBottom: "8px" }}>
+        Live Workers
+      </h3>
 
       {workers.length === 0 && (
         <p style={{ fontSize: "13px", opacity: 0.7 }}>
@@ -14,33 +22,39 @@ const WorkerList = ({ workers, onSelect }) => {
       {workers.map((worker) => (
 
         <div
-          key={worker.workerId}
+          key={worker.id}
           onClick={() => onSelect(worker)}
           style={{
             padding: "10px",
             marginBottom: "8px",
             borderRadius: "8px",
             cursor: "pointer",
-            background: "#020617",
+            background:
+              selectedWorker?.id === worker.id
+                ? "#0f172a"
+                : "#020617",
             border: "1px solid #1e293b"
           }}
         >
 
-          <strong>{worker.workerId}</strong>
+          <strong>{worker.name || worker.id}</strong>
 
           <br />
 
           <span style={{ fontSize: "12px" }}>
-            ID: {worker.workerId}
+            ID: {worker.id}
           </span>
 
           <br />
 
-          <span style={{
-            fontSize: "12px",
-            color: "#86efac"
-          }}>
-            ONLINE
+          <span
+            style={{
+              fontSize: "12px",
+              color: getStatusColor(worker.status),
+              fontWeight: "bold"
+            }}
+          >
+            {worker.status || "NORMAL"}
           </span>
 
         </div>

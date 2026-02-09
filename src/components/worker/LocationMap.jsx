@@ -1,8 +1,7 @@
 import { MapContainer, TileLayer, Marker, Popup, Circle, useMap } from "react-leaflet";
 import { useEffect, useState } from "react";
 import "../../services/leafletIconFix";
-
-
+import socket from "../../socket";
 
 const RecenterMap = ({ position }) => {
   const map = useMap();
@@ -15,48 +14,41 @@ const RecenterMap = ({ position }) => {
 };
 
 const LocationMap = () => {
-  const [position, setPosition] = useState([18.6770, 73.8987]); // Alandi default
+
+  const [position, setPosition] = useState([18.6770, 73.8987]); // default
   const [accuracy, setAccuracy] = useState(null);
 
   /* 📡 GPS Logic */
   useEffect(() => {
+
     if (!navigator.geolocation) {
       console.error("Geolocation not supported");
       return;
     }
 
     const watchId = navigator.geolocation.watchPosition(
+
       (pos) => {
-      const lat = pos.coords.latitude;
-      const lng = pos.coords.longitude;
 
-      setAccuracy(pos.coords.accuracy);
-      setPosition([lat, lng]);
+        const lat = pos.coords.latitude;
+        const lng = pos.coords.longitude;
 
-      // 🔴 SAVE LIVE LOCATION FOR SUPERVISOR
-      const worker = JSON.parse(localStorage.getItem("workerData"));
-      if (!worker) return;
+        setAccuracy(pos.coords.accuracy);
+        setPosition([lat, lng]);
 
-      const allWorkers =
-        JSON.parse(localStorage.getItem("workersLiveData")) || {};
+        // 🚀 SEND LIVE LOCATION TO SERVER
+        socket.emit("worker-location-update", {
+          lat,
+          lng,
+          updatedAt: Date.now()
+        });
 
-      allWorkers[worker.workerId] = {
-        id: worker.workerId,
-        name: worker.name,
-        lat,
-        lng,
-        status: localStorage.getItem("workerStatus") || "NORMAL",
-        updatedAt: Date.now(),
-      };
-
-      localStorage.setItem(
-        "workersLiveData",
-        JSON.stringify(allWorkers)
-      );
       },
+
       (err) => {
         console.error("GPS error:", err.message);
       },
+
       {
         enableHighAccuracy: true,
         timeout: 20000,
@@ -65,10 +57,12 @@ const LocationMap = () => {
     );
 
     return () => navigator.geolocation.clearWatch(watchId);
+
   }, []);
-  
+
   return (
     <div className="worker-card">
+
       <div className="location-title">📍 Live Location</div>
 
       <div className="map-wrapper">
@@ -83,10 +77,8 @@ const LocationMap = () => {
             url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
           />
 
-          {/* Auto recenter */}
           <RecenterMap position={position} />
 
-          {/* Marker */}
           <Marker position={position}>
             <Popup>
               You are here <br />
@@ -94,7 +86,6 @@ const LocationMap = () => {
             </Popup>
           </Marker>
 
-          {/* Accuracy Circle */}
           {accuracy && (
             <Circle
               center={position}
@@ -105,19 +96,16 @@ const LocationMap = () => {
               }}
             />
           )}
+
         </MapContainer>
       </div>
 
       <p className="gps-note">
         GPS accuracy depends on device & signal
       </p>
+
     </div>
   );
 };
-console.log(
-  "Supervisor sees:",
-  JSON.parse(localStorage.getItem("workersLiveData"))
-);
-
 
 export default LocationMap;

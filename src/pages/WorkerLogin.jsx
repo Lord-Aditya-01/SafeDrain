@@ -1,39 +1,44 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../components/worker/worker.css";
+import socket from "../socket";
 
 const WorkerLogin = () => {
+
   const [workerId, setWorkerId] = useState("");
   const [password, setPassword] = useState("");
+
   const navigate = useNavigate();
 
-const handleLogin = (e) => {
-  e.preventDefault();
+  const handleLogin = (e) => {
 
-  const storedWorker = JSON.parse(localStorage.getItem("workerData"));
+    e.preventDefault();
 
-  if (!storedWorker) {
-    alert("No worker found. Please sign up first.");
-    return;
-  }
+    // 🚀 Send login request to backend
+    socket.emit("worker-login", {
+      workerId,
+      password
+    });
 
-  if (
-  workerId === storedWorker.workerId &&
-  password === storedWorker.password
-) {
-  localStorage.setItem("isWorkerLoggedIn", "true");
-  navigate("/worker");
-}
+    // Success response
+    socket.once("worker-login-success", () => {
+      navigate("/worker");
+    });
 
-};
+    // Failed response
+    socket.once("worker-login-failed", () => {
+      alert("Invalid Worker credentials");
+    });
 
-
+  };
 
   return (
     <div className="login-container">
+
       <form className="login-card" onSubmit={handleLogin}>
+
         <h2 className="login-title">Worker Login</h2>
-        
+
         <input
           type="text"
           placeholder="Worker ID"
@@ -53,12 +58,16 @@ const handleLogin = (e) => {
         <button type="submit" className="login-btn">
           Login
         </button>
+
         <p className="login-link">
-        New worker?{" "}
-        <span onClick={() => navigate("/signup")}>Sign up</span>
+          New worker?{" "}
+          <span onClick={() => navigate("/signup")}>
+            Sign up
+          </span>
         </p>
 
       </form>
+
     </div>
   );
 };

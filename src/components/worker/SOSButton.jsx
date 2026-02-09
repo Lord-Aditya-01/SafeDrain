@@ -1,22 +1,18 @@
+import socket from "../../socket";
+
 const SOSButton = () => {
+
   const handleSOS = () => {
-    const worker = JSON.parse(localStorage.getItem("workerData"));
 
-    if (!worker || !worker.emergencyContact) {
-      alert("Emergency contact not found");
-      return;
-    }
+    // 🚨 Notify backend immediately
+    socket.emit("worker-sos", {
+      status: "EMERGENCY",
+      updatedAt: Date.now()
+    });
 
-    // Update worker status (optional for later use)
-    localStorage.setItem("workerStatus", "EMERGENCY");
+    // Alert worker
+    alert("🚨 SOS Activated! Supervisor has been notified.");
 
-    // Alert user
-    alert(
-      `🚨 SOS Activated!\nCalling Emergency Contact: ${worker.emergencyContact}`
-    );
-
-    // 📞 Open phone dialer (works on mobile)
-    window.location.href = `tel:${worker.emergencyContact}`;
   };
 
   return (

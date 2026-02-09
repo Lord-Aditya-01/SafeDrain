@@ -6,17 +6,17 @@ const locationRoutes = require("./routes/locationRoutes");
 
 const app = express();
 
-console.log("authRoutes:", authRoutes);
-
+// middleware
 app.use(cors());
 app.use(express.json());
 
-console.log("locationRoutes:", locationRoutes);
+// routes
 app.use("/api/auth", authRoutes);
 app.use("/api/location", locationRoutes);
-app.get("/", (req,res)=>{
+
+// health check
+app.get("/", (req, res) => {
    res.send("SafeDrain backend running");
 });
 
 module.exports = app;
-console.log(locationRoutes);

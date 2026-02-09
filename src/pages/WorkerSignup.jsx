@@ -1,8 +1,10 @@
 import { useState } from "react";
 import { useNavigate } from "react-router-dom";
 import "../components/worker/worker.css";
+import socket from "../socket";
 
 const WorkerSignup = () => {
+
   const navigate = useNavigate();
 
   const [formData, setFormData] = useState({
@@ -25,6 +27,7 @@ const WorkerSignup = () => {
   };
 
   const sendOtp = () => {
+
     if (formData.mobile.length === 10) {
       alert("OTP sent (demo OTP: 1234)");
       setOtpSent(true);
@@ -32,8 +35,16 @@ const WorkerSignup = () => {
       alert("Enter valid 10-digit mobile number");
     }
   };
+// const handleSignup = (e) => {
+//   e.preventDefault();
+
+//   console.log("SIGNUP CLICKED");   // ⭐ ADD THIS
+
+  
+// }
 
   const handleSignup = (e) => {
+
     e.preventDefault();
 
     if (formData.otp !== "1234") {
@@ -51,25 +62,30 @@ const WorkerSignup = () => {
       return;
     }
 
-    // ✅ Save worker data
-    localStorage.setItem(
-      "workerData",
-      JSON.stringify({
-        name: formData.name,
-        mobile: formData.mobile,
-        workerId: formData.workerId,
-        emergencyContact: formData.emergencyContact,
-        password: formData.password, // prototype only
-      })
-    );
+    // 🚀 Send signup request to backend
+    socket.emit("worker-signup", {
+      name: formData.name,
+      mobile: formData.mobile,
+      workerId: formData.workerId,
+      emergencyContact: formData.emergencyContact,
+      password: formData.password
+    });
 
-    alert("Signup successful!");
-    navigate("/");
+    socket.once("worker-signup-success", () => {
+      alert("Signup successful!");
+      navigate("/");
+    });
+
+    socket.once("worker-signup-failed", (msg) => {
+      alert(msg || "Signup failed");
+    });
   };
 
   return (
     <div className="login-container">
+
       <form className="login-card" onSubmit={handleSignup}>
+
         <h2 className="login-title">Worker Signup</h2>
 
         <input
@@ -160,7 +176,9 @@ const WorkerSignup = () => {
           Already registered?{" "}
           <span onClick={() => navigate("/")}>Login</span>
         </p>
+
       </form>
+
     </div>
   );
 };
