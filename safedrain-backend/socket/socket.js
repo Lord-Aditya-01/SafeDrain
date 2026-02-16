@@ -9,9 +9,7 @@ module.exports = (io) => {
 
     console.log("Connected:", socket.id);
 
-    // ==============================
     // ✅ SUPERVISOR LOGIN
-    // ==============================
 
     socket.on("supervisor-login", ({ username, password }) => {
 
@@ -47,9 +45,7 @@ module.exports = (io) => {
 
   });
 
-    // ==============================
     // ✅ WORKER LOGIN
-    // ==============================
 
     socket.on("worker-login", async ({ workerId, password }) => {
 
@@ -85,9 +81,7 @@ module.exports = (io) => {
 
     });
 
-    // ==============================
     // ✅ SEND WORKER SESSION DATA
-    // ==============================
 
     socket.on("get-worker-session", () => {
 
@@ -100,9 +94,7 @@ module.exports = (io) => {
 
     });
 
-    // ==============================
     // ✅ SUPERVISOR JOIN
-    // ==============================
 
     socket.on("join-supervisor", () => {
 
@@ -115,9 +107,7 @@ module.exports = (io) => {
 
     });
 
-    // ==============================
     // ✅ WORKER LOCATION UPDATE
-    // ==============================
 
     socket.on("worker-location-update", async (data) => {
 
@@ -148,9 +138,7 @@ module.exports = (io) => {
 
     });
 
-    // ==============================
     // ✅ GAS UPDATE
-    // ==============================
 
     socket.on("worker-gas-update", (data) => {
 
@@ -169,9 +157,7 @@ module.exports = (io) => {
 
     });
 
-    // ==============================
     // ✅ WORK STATUS UPDATE
-    // ==============================
 
     socket.on("worker-work-status", (data) => {
 
@@ -190,9 +176,7 @@ module.exports = (io) => {
 
     });
 
-    // ==============================
     // ✅ SOS EMERGENCY
-    // ==============================
 
     socket.on("worker-sos", () => {
 
@@ -208,9 +192,7 @@ module.exports = (io) => {
 
     });
 
-    // ==============================
     // ✅ DISCONNECT
-    // ==============================
 
     socket.on("disconnect", () => {
 
