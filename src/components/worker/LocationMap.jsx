@@ -38,10 +38,11 @@ const LocationMap = () => {
 
         // 🚀 SEND LIVE LOCATION TO SERVER
         socket.emit("worker-location-update", {
-          lat,
-          lng,
-          updatedAt: Date.now()
-        });
+        latitude: lat,
+        longitude: lng,
+        updatedAt: Date.now()
+      });
+
 
       },
 
