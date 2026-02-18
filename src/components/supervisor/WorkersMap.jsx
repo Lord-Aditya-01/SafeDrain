@@ -31,11 +31,24 @@ const warningIcon = L.divIcon({
   iconAnchor: [8, 8],
 });
 
+
+// ✅ Safe coordinate check (VERY IMPORTANT)
+const hasValidLocation = (worker) =>
+  worker &&
+  worker.lat !== undefined &&
+  worker.lng !== undefined &&
+  worker.lat !== null &&
+  worker.lng !== null;
+
+
+// ======================
+// Focus selected worker
+// ======================
 const FocusWorker = ({ worker }) => {
   const map = useMap();
 
   useEffect(() => {
-    if (worker) {
+    if (hasValidLocation(worker)) {
       map.setView([worker.lat, worker.lng], 17);
     }
   }, [worker, map]);
@@ -43,14 +56,20 @@ const FocusWorker = ({ worker }) => {
   return null;
 };
 
+
+// ======================
+// Auto center first worker
+// ======================
 const AutoCenter = ({ workers }) => {
   const map = useMap();
   const hasCentered = useRef(false);
 
   useEffect(() => {
-    if (!hasCentered.current && workers.length > 0) {
+    const validWorkers = workers.filter(hasValidLocation);
+
+    if (!hasCentered.current && validWorkers.length > 0) {
       map.setView(
-        [workers[0].lat, workers[0].lng],
+        [validWorkers[0].lat, validWorkers[0].lng],
         map.getZoom()
       );
       hasCentered.current = true;
@@ -60,11 +79,19 @@ const AutoCenter = ({ workers }) => {
   return null;
 };
 
+
+// ======================
+// MAIN MAP
+// ======================
 const WorkersMap = ({ workers = [], selectedWorker }) => {
+
+  // ⭐ Prevent crash by filtering invalid workers
+  const validWorkers = workers.filter(hasValidLocation);
 
   return (
     <div style={{ height: "80vh", borderRadius: "12px", overflow: "hidden" }}>
-      {workers.length === 0 && (
+      
+      {validWorkers.length === 0 && (
         <p style={{ color: "white", padding: "8px" }}>
           No workers live yet…
         </p>
@@ -80,47 +107,47 @@ const WorkersMap = ({ workers = [], selectedWorker }) => {
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
         />
 
-        <AutoCenter workers={workers} />
+        <AutoCenter workers={validWorkers} />
         <FocusWorker worker={selectedWorker} />
 
-        {workers
-          .filter(worker => worker.lat && worker.lng)   // ⭐ Prevent invalid marker crash
-          .map((worker) => (
-            <Marker
-              key={worker.workerId}
-              position={[worker.lat, worker.lng]}
-              icon={
-                worker.status === "EMERGENCY"
-                  ? sosIcon
-                  : worker.status === "WARNING"
-                  ? warningIcon
-                  : normalIcon
-              }
-            >
-              <Popup>
-                <strong>{worker.name}</strong>
-                <br />
-                ID: {worker.id}
-                <br />
-                Status:{" "}
-                <span
-                  style={{
-                    color:
-                      worker.status === "EMERGENCY"
-                        ? "red"
-                        : worker.status === "WARNING"
-                        ? "orange"
-                        : "green",
-                    fontWeight: "bold",
-                  }}
-                >
-                  {worker.status}
-                </span>
-                <br />
-                Updated:{" "}
-                {new Date(worker.updatedAt).toLocaleTimeString()}
-              </Popup>
-            </Marker>
+        {validWorkers.map((worker) => (
+          <Marker
+            key={worker.id}   // ⭐ consistent key
+            position={[worker.lat, worker.lng]}
+            icon={
+              worker.status === "EMERGENCY"
+                ? sosIcon
+                : worker.status === "WARNING"
+                ? warningIcon
+                : normalIcon
+            }
+          >
+            <Popup>
+              <strong>{worker.name}</strong>
+              <br />
+              ID: {worker.id}
+              <br />
+              Status:{" "}
+              <span
+                style={{
+                  color:
+                    worker.status === "EMERGENCY"
+                      ? "red"
+                      : worker.status === "WARNING"
+                      ? "orange"
+                      : "green",
+                  fontWeight: "bold",
+                }}
+              >
+                {worker.status}
+              </span>
+              <br />
+              Updated:{" "}
+              {worker.updatedAt
+                ? new Date(worker.updatedAt).toLocaleTimeString()
+                : "N/A"}
+            </Popup>
+          </Marker>
         ))}
 
       </MapContainer>
