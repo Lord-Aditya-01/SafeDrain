@@ -157,10 +157,6 @@ module.exports = (io) => {
         "receive-location",
         workersState[id]
       );
-      socket.emit(
-        "worker-session-data",
-        workersState[id]
-      );
     });
 
     // ===============================
