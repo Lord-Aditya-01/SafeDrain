@@ -90,40 +90,46 @@ module.exports = (io) => {
     // ✅ WORKER LOCATION UPDATE
     // ===============================
 
-    socket.on("worker-location-update", async (data) => {
+socket.on("worker-location-update", async (data) => {
 
-    const id = socket.workerId;
-    if (!id) return;
+  const id = socket.workerId;
+  if (!id) return;
 
-    // ⭐ VERY IMPORTANT SAFETY CHECK
-    if (!data.latitude || !data.longitude) {
-      console.log("Skipped invalid location update");
-      return;
-    }
+  // 🚀 BLOCK INVALID GPS DATA
+  if (
+    typeof data.latitude !== "number" ||
+    typeof data.longitude !== "number"
+  ) {
+    console.log("Skipped invalid location update");
+    return;
+  }
 
-    try {
+  try {
 
-      workersState[id] = {
-        ...workersState[id],
-        ...data
-      };
+    workersState[id] = {
+      ...workersState[id],
+      lat: data.latitude,
+      lng: data.longitude,
+      updatedAt: new Date()
+    };
 
-      await Location.create({
-        workerId: id,
-        latitude: data.latitude,
-        longitude: data.longitude
-      });
+    await Location.create({
+      workerId: id,
+      latitude: data.latitude,
+      longitude: data.longitude
+    });
 
-      io.to("supervisors").emit(
-        "receive-location",
-        workersState[id]
-      );
+    io.to("supervisors").emit(
+      "receive-location",
+      workersState[id]
+    );
 
-    } catch(err) {
-      console.log("Location save error:", err);
-    }
+  } catch(err) {
+    console.log("Location save error:", err);
+  }
 
-  });
+});
+
 
     // ===============================
     // ✅ GAS UPDATE
