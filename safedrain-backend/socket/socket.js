@@ -54,7 +54,11 @@ module.exports = (io) => {
           status: "NORMAL",
           online: true
         };
-        socket.emit("worker-login-success");
+        socket.emit("worker-login-success", {
+        workerId: worker.workerId,
+        name: worker.name,
+        emergencyContact: worker.emergencyContact
+        });
         console.log("Worker logged in:", workerId);
       } catch(err) {
         console.log("Worker login error:", err);

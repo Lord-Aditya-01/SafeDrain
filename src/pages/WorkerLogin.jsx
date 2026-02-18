@@ -21,16 +21,14 @@ const WorkerLogin = () => {
     });
 
     // Success response
-    socket.once("worker-login-success", () => {
+    socket.once("worker-login-success", (data) => {
 
-  // SAVE worker data
-  localStorage.setItem("worker", JSON.stringify({
-    workerId: workerId
-  }));
+  localStorage.setItem("worker", JSON.stringify(data));
 
   navigate("/worker");
 
 });
+
 
 
 
