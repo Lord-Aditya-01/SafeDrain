@@ -161,7 +161,6 @@ module.exports = (io) => {
         "worker-session-data",
         workersState[id]
       );
-      console.log(worker.workStatus)
     });
 
     // ===============================
