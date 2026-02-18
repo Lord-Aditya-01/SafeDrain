@@ -4,9 +4,7 @@ import WorkerDashboard from "../components/worker/WorkerDashboard";
 import socket from "../socket";
 
 const WorkerPage = () => {
-
   const [isAuth, setIsAuth] = useState(null); // null = loading
-
   useEffect(() => {
 
     // Ask backend if worker session exists

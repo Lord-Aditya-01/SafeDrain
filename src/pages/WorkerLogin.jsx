@@ -13,7 +13,7 @@ const WorkerLogin = () => {
   const handleLogin = (e) => {
 
     e.preventDefault();
-
+    console.log("Login clicked");
     // 🚀 Send login request to backend
     socket.emit("worker-login", {
       workerId,
@@ -22,8 +22,17 @@ const WorkerLogin = () => {
 
     // Success response
     socket.once("worker-login-success", () => {
-      navigate("/worker");
-    });
+
+  // SAVE worker data
+  localStorage.setItem("worker", JSON.stringify({
+    workerId: workerId
+  }));
+
+  navigate("/worker");
+
+});
+
+
 
     // Failed response
     socket.once("worker-login-failed", () => {
@@ -55,7 +64,7 @@ const WorkerLogin = () => {
           className="login-input"
         />
 
-        <button type="submit" className="login-btn">
+        <button type="submit" className="login-btn" >
           Login
         </button>
 

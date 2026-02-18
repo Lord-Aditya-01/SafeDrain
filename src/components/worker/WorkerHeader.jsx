@@ -5,15 +5,15 @@ const WorkerHeader = ({ worker }) => {
 
   const navigate = useNavigate();
 
+  // ✅ fallback to localStorage if prop not provided
+  const currentWorker = worker ?? JSON.parse(localStorage.getItem("worker"));
+  console.log("Current Worker:",  currentWorker);
+  
   const handleLogout = () => {
-
-    // Notify backend
     socket.emit("worker-logout");
+    // optional but recommended cleanup
+    localStorage.removeItem("worker");
 
-    // Disconnect socket session
-    socket.disconnect();
-
-    // Redirect
     navigate("/");
   };
 
@@ -21,11 +21,11 @@ const WorkerHeader = ({ worker }) => {
     <div className="worker-card worker-header">
 
       <div>
-        <h2>{worker?.name || "Worker"}</h2>
+        <h2>{currentWorker?.name || "Worker"}</h2>
 
-        <p>ID: {worker?.workerId || "N/A"}</p>
+        <p>ID: {currentWorker?.workerId || currentWorker?.id || "N/A"}</p>
 
-        {worker?.status === "EMERGENCY" && (
+        {currentWorker?.status === "EMERGENCY" && (
           <p style={{ color: "red", fontWeight: "bold", fontSize: "13px" }}>
             🚨 EMERGENCY MODE
           </p>

@@ -16,29 +16,28 @@ const SupervisorDashboard = () => {
     // Join supervisor room once
     socket.emit("join-supervisor");
 
-    // Initial workers list from server
+    // ===============================
+    // ✅ Initial workers list
+    // ===============================
     const handleInitialWorkers = (data) => {
-
       if (!Array.isArray(data)) return;
-
       console.log("Initial workers:", data);
-
       const formatted = {};
-
       data.forEach(worker => {
         if (worker?.id) {
           formatted[worker.id] = worker;
         }
       });
-
+      
       setWorkers(formatted);
     };
 
-    // Live location updates
+    // ===============================
+    // ✅ Live updates
+    // ===============================
     const handleLocation = (data) => {
 
       if (!data?.id) return;
-
       console.log("Worker location:", data);
 
       setWorkers(prev => ({
@@ -49,13 +48,37 @@ const SupervisorDashboard = () => {
         }
       }));
     };
+    socket.on("worker-offline", (data) => {
+    console.log("OFFLINE EVENT RECEIVED:", data);
+  });
 
+    // ===============================
+    // ✅ Worker offline (GHOST FIX)
+    // ===============================
+    const handleOffline = ({ workerId }) => {
+    setWorkers(prev => {
+      const newWorkers = Object.fromEntries(
+        Object.entries(prev).filter(
+          ([key]) => key !== String(workerId)
+        )
+      );
+      return newWorkers;
+    });
+};
+
+
+
+    // Register listeners
     socket.on("initial-workers", handleInitialWorkers);
     socket.on("receive-location", handleLocation);
+    socket.on("worker-offline", handleOffline);
 
+    // Cleanup
     return () => {
       socket.off("initial-workers", handleInitialWorkers);
       socket.off("receive-location", handleLocation);
+      socket.off("worker-offline", handleOffline);
+
     };
 
   }, []);
@@ -65,6 +88,7 @@ const SupervisorDashboard = () => {
       <SupervisorNavbar />
 
       <div className="supervisor-content">
+
         <div className="supervisor-map">
           <WorkersMap
             workers={Object.values(workers)}
@@ -78,12 +102,11 @@ const SupervisorDashboard = () => {
             onSelect={setSelectedWorker}
           />
         </div>
+
       </div>
 
       <SupervisorFooter />
-
       <div>Live Tracking</div>
-
     </div>
   );
 };

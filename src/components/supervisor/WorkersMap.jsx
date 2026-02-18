@@ -83,43 +83,46 @@ const WorkersMap = ({ workers = [], selectedWorker }) => {
         <AutoCenter workers={workers} />
         <FocusWorker worker={selectedWorker} />
 
-        {workers.map((worker) => (
-          <Marker
-            key={worker.id}
-            position={[worker.lat, worker.lng]}
-            icon={
-              worker.status === "EMERGENCY"
-                ? sosIcon
-                : worker.status === "WARNING"
-                ? warningIcon
-                : normalIcon
-            }
-          >
-            <Popup>
-              <strong>{worker.name}</strong>
-              <br />
-              ID: {worker.id}
-              <br />
-              Status:{" "}
-              <span
-                style={{
-                  color:
-                    worker.status === "EMERGENCY"
-                      ? "red"
-                      : worker.status === "WARNING"
-                      ? "orange"
-                      : "green",
-                  fontWeight: "bold",
-                }}
-              >
-                {worker.status}
-              </span>
-              <br />
-              Updated:{" "}
-              {new Date(worker.updatedAt).toLocaleTimeString()}
-            </Popup>
-          </Marker>
+        {workers
+          .filter(worker => worker.lat && worker.lng)   // ⭐ Prevent invalid marker crash
+          .map((worker) => (
+            <Marker
+              key={worker.workerId}
+              position={[worker.lat, worker.lng]}
+              icon={
+                worker.status === "EMERGENCY"
+                  ? sosIcon
+                  : worker.status === "WARNING"
+                  ? warningIcon
+                  : normalIcon
+              }
+            >
+              <Popup>
+                <strong>{worker.name}</strong>
+                <br />
+                ID: {worker.id}
+                <br />
+                Status:{" "}
+                <span
+                  style={{
+                    color:
+                      worker.status === "EMERGENCY"
+                        ? "red"
+                        : worker.status === "WARNING"
+                        ? "orange"
+                        : "green",
+                    fontWeight: "bold",
+                  }}
+                >
+                  {worker.status}
+                </span>
+                <br />
+                Updated:{" "}
+                {new Date(worker.updatedAt).toLocaleTimeString()}
+              </Popup>
+            </Marker>
         ))}
+
       </MapContainer>
     </div>
   );
