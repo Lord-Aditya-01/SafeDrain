@@ -12,15 +12,17 @@ const WorkerDashboard = () => {
   const [worker, setWorker] = useState(null);
 
   useEffect(() => {
+  socket.emit("get-worker-session");
+  const handleWorkerUpdate = (data) => {
+    setWorker(data);
+  };
+  socket.on("worker-session-data", handleWorkerUpdate);
+  return () => {
+    socket.off("worker-session-data", handleWorkerUpdate);
+  };
 
-    // Ask backend for worker session data
-    socket.emit("get-worker-session");
+}, []);
 
-    socket.once("worker-session-data", (data) => {
-      setWorker(data);
-    });
-
-  }, []);
 
   if (!worker) {
     return <div>Loading worker data...</div>;
