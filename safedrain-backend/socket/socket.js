@@ -91,25 +91,39 @@ module.exports = (io) => {
     // ===============================
 
     socket.on("worker-location-update", async (data) => {
-      const id = socket.workerId;
-      if (!id) return;
-      try {
-        workersState[id] = {
-          ...workersState[id],
-          ...data
-        };
-        await Location.create({
-          workerId: id,
-          ...data
-        });
-        io.to("supervisors").emit(
-          "receive-location",
-          workersState[id]
-        );
-      } catch(err) {
-        console.log("Location save error:", err);
-      }
-    });
+
+    const id = socket.workerId;
+    if (!id) return;
+
+    // ⭐ VERY IMPORTANT SAFETY CHECK
+    if (!data.latitude || !data.longitude) {
+      console.log("Skipped invalid location update");
+      return;
+    }
+
+    try {
+
+      workersState[id] = {
+        ...workersState[id],
+        ...data
+      };
+
+      await Location.create({
+        workerId: id,
+        latitude: data.latitude,
+        longitude: data.longitude
+      });
+
+      io.to("supervisors").emit(
+        "receive-location",
+        workersState[id]
+      );
+
+    } catch(err) {
+      console.log("Location save error:", err);
+    }
+
+  });
 
     // ===============================
     // ✅ GAS UPDATE
