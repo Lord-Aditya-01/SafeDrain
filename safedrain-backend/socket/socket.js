@@ -90,27 +90,22 @@ module.exports = (io) => {
     // ✅ WORKER LOCATION UPDATE
     // ===============================
 
-socket.on("worker-location-update", async (data) => {
+    socket.on("worker-location-update", async (data) => {
 
-  const id = socket.workerId;
-  if (!id) return;
+    const id = socket.workerId;
+    if (!id) return;
 
-  // 🚀 BLOCK INVALID GPS DATA
-  if (
-    typeof data.latitude !== "number" ||
-    typeof data.longitude !== "number"
-  ) {
-    console.log("Skipped invalid location update");
-    return;
-  }
-
-  try {
+    // Ignore invalid data
+    if (!data?.latitude || !data?.longitude) {
+      console.log("Skipped invalid location update");
+      return;
+    }
 
     workersState[id] = {
       ...workersState[id],
       lat: data.latitude,
       lng: data.longitude,
-      updatedAt: new Date()
+      updatedAt: Date.now()
     };
 
     await Location.create({
@@ -123,12 +118,7 @@ socket.on("worker-location-update", async (data) => {
       "receive-location",
       workersState[id]
     );
-
-  } catch(err) {
-    console.log("Location save error:", err);
-  }
-
-});
+  });
 
 
     // ===============================
