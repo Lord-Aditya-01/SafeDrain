@@ -36,7 +36,13 @@ const WorkerDashboard = () => {
         {/* GPS tracking handled inside LocationMap */}
         <LocationMap />
 
-        <GasStatus />
+        {worker.workStatus === "Inside" ? (
+          <GasStatus />
+        ) : (
+          <div className="worker-card">
+            Gas monitoring inactive (Worker outside manhole)
+          </div>
+        )}
 
         <SOSButton />
 
