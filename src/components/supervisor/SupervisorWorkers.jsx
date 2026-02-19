@@ -83,22 +83,44 @@ const SupervisorWorkers = () => {
 
       {filteredWorkers.map(worker => (
 
-        <div key={worker.id} className="worker-card">
+        <div key={worker.id} className="worker-card"
+            style={{
+            background: "#020617",
+            border: "1px solid #1e293b",
+            borderRadius: "12px",
+            padding: "18px",
+            marginBottom: "18px",
+            color: "white",
+            boxShadow: "0 0 10px rgba(0,0,0,0.4)"
+            }}
+        >
 
-          <h3>👷 {worker.name}</h3>
+          <h3 style={{ marginBottom: "10px" }}>
+            👷 {worker.name}
+          </h3>     
 
           <p>ID: {worker.workerId}</p>
           <p>Contact: {worker.mobile || "N/A"}</p>
           <p>Emergency Contact: {worker.emergencyContact || "N/A"}</p>
 
           <p>Status:
-            <span style={{ color: worker.status === "EMERGENCY" ? "red" : "green" }}>
-              {" "}{worker.status}
+             <span
+            style={{
+                color:
+                worker.status === "EMERGENCY"
+                    ? "#ef4444"
+                    : worker.status === "WARNING"
+                    ? "#f59e0b"
+                    : "#22c55e",
+                fontWeight: "bold"
+            }}
+            >
+            {" "} {worker.status}
             </span>
           </p>
 
           <p>Work Status: {worker.workStatus}</p>
-
+        <hr style={{ borderColor: "#1e293b", margin: "10px 0" }} />
           {worker.oxygen && <p>🧪 Oxygen: {worker.oxygen}</p>}
           {worker.toxic && <p>☣ Toxic Gas: {worker.toxic}</p>}
 
