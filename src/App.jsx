@@ -13,6 +13,7 @@ import SupervisorWorkers from "./components/supervisor/SupervisorWorkers";
 import SupervisorDashboard from "./components/supervisor/SupervisorDashboard";
 import SupervisorAlerts from "./components/supervisor/SupervisorAlerts"; // ⭐ MISSING IMPORT
 import SupervisorLayout from "./pages/supervisor/SupervisorLayout";
+
 function App() {
   return (
     <BrowserRouter>
@@ -28,7 +29,7 @@ function App() {
         {/* Supervisor Routes */}
         <Route path="/supervisor" element={<SupervisorPage />} />
         <Route path="/supervisor-login" element={<SupervisorLogin />} />
-        <Route path="/supervisor-dashboard" element={<SupervisorDashboard />} />
+        {/* <Route path="/supervisor-dashboard" element={<SupervisorDashboard />} /> */}
 
         <Route path="/supervisor" element={<SupervisorLayout />}>
           <Route path="dashboard" element={<SupervisorDashboard />} />
