@@ -10,7 +10,7 @@ import SupervisorLogin from "./pages/SupervisorLogin";
 import AppInitializer from "./AppInitializer";
 
 import SupervisorWorkers from "./components/supervisor/SupervisorWorkers";
-import SupervisorDashboard from "./pages/supervisor/SupervisorDashboard";
+import SupervisorDashboard from "./components/supervisor/SupervisorDashboard";
 import SupervisorAlerts from "./components/supervisor/SupervisorAlerts"; // ⭐ MISSING IMPORT
 
 function App() {
