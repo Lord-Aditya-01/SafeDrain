@@ -1,5 +1,5 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
-
+import { Navigate } from "react-router-dom";
 import WorkerLogin from "./pages/WorkerLogin";
 import WorkerSignup from "./pages/WorkerSignup";
 import WorkerPage from "./pages/WorkerPage";
@@ -26,16 +26,17 @@ function App() {
         <Route path="/signup" element={<WorkerSignup />} />
         <Route path="/worker" element={<WorkerPage />} />
 
-        {/* Supervisor Routes */}
-        <Route path="/supervisor" element={<SupervisorPage />} />
+        {/* Supervisor Login */}
         <Route path="/supervisor-login" element={<SupervisorLogin />} />
-        <Route path="/supervisor-dashboard" element={<SupervisorDashboard />} />
-
+        {/* Supervisor Layout + Nested Routes */}
         <Route path="/supervisor" element={<SupervisorLayout />}>
+          {/* Default redirect */}
+          <Route index element={<Navigate to="dashboard" />} />
           <Route path="dashboard" element={<SupervisorDashboard />} />
           <Route path="workers" element={<SupervisorWorkers />} />
           <Route path="alerts" element={<SupervisorAlerts />} />
         </Route>
+
 
       </Routes>
     </BrowserRouter>
