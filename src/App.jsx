@@ -32,7 +32,7 @@ function App() {
         <Route path="/supervisor-dashboard" element={<SupervisorDashboard />} />
 
         <Route path="/supervisor" element={<SupervisorLayout />}>
-          <Route path="/supervisor-dashboard" element={<SupervisorDashboard />} />
+          <Route path="dashboard" element={<SupervisorDashboard />} />
           <Route path="workers" element={<SupervisorWorkers />} />
           <Route path="alerts" element={<SupervisorAlerts />} />
         </Route>
