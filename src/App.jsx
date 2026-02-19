@@ -29,9 +29,13 @@ function App() {
         <Route path="/supervisor" element={<SupervisorPage />} />
         <Route path="/supervisor-login" element={<SupervisorLogin />} />
         <Route path="/supervisor-dashboard" element={<SupervisorDashboard />} />
-        <Route path="/supervisor/workers" element={<SupervisorWorkers />} />
-        <Route path="/supervisor/alerts" element={<SupervisorAlerts />} />
-        <Route path="/supervisor/dashboard" element={<SupervisorDashboard />} />
+
+        <Route path="/supervisor" element={<SupervisorLayout />}>
+          <Route path="dashboard" element={<SupervisorDashboard />} />
+          <Route path="workers" element={<SupervisorWorkers />} />
+          <Route path="alerts" element={<SupervisorAlerts />} />
+        </Route>
+
       </Routes>
     </BrowserRouter>
   );
