@@ -26,7 +26,7 @@ function App() {
         <Route path="/worker" element={<WorkerPage />} />
 
         {/* Supervisor Routes */}
-        <Route path="/supervisor-login" element={<SupervisorLogin />} />
+        <Route path="/supervisor" element={<SupervisorLogin />} />
 
         <Route path="/supervisor/dashboard" element={<SupervisorDashboard />} />
         <Route path="/supervisor/workers" element={<SupervisorWorkers />} />
