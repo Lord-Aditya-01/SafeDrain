@@ -9,35 +9,28 @@ const SupervisorWorkers = () => {
 
     socket.emit("join-supervisor");
 
-    // Initial list
     socket.on("initial-workers", (data) => {
-      setWorkers(data);
+      setWorkers(data || []);
     });
 
-    // Live updates
-    socket.on("receive-location", (worker) => {
+    socket.on("receive-location", (data) => {
+
       setWorkers(prev => {
+        const exists = prev.find(w => w.id === data.id);
 
-        const updated = [...prev];
-        const index = updated.findIndex(w => w.id === worker.id);
-
-        if(index !== -1){
-          updated[index] = worker;
-        } else {
-          updated.push(worker);
+        if (exists) {
+          return prev.map(w =>
+            w.id === data.id ? { ...w, ...data } : w
+          );
         }
 
-        return updated;
+        return [...prev, data];
       });
+
     });
 
-    // Remove offline workers
     socket.on("worker-offline", ({ workerId }) => {
-
-      setWorkers(prev =>
-        prev.filter(w => w.id !== workerId)
-      );
-
+      setWorkers(prev => prev.filter(w => w.id !== workerId));
     });
 
     return () => {
@@ -49,25 +42,67 @@ const SupervisorWorkers = () => {
   }, []);
 
   return (
-    <div>
 
-      <h2>Active Workers</h2>
+    <div style={{ padding: "20px" }}>
 
-      {workers.map(worker => (
+      <h2 style={{ marginBottom: "20px" }}>Active Workers</h2>
 
-        <div key={worker.id} style={{marginBottom:"10px"}}>
+      <div style={{
+        display: "grid",
+        gridTemplateColumns: "repeat(auto-fit, minmax(280px,1fr))",
+        gap: "16px"
+      }}>
 
-          <strong>{worker.name}</strong>
+        {workers.map(worker => (
 
-          <p>ID: {worker.id}</p>
-          <p>Status: {worker.status}</p>
-          <p>Work Status: {worker.workStatus}</p>
-          <p>Oxygen: {worker.oxygen || "--"}</p>
-          <p>Toxic: {worker.toxic || "--"}</p>
+          <div
+            key={worker.id}
+            style={{
+              background: "#020617",
+              padding: "18px",
+              borderRadius: "12px",
+              border: "1px solid #1e293b",
+              boxShadow: "0 0 12px rgba(0,0,0,0.4)"
+            }}
+          >
 
-        </div>
+            <h3 style={{ marginBottom: "8px" }}>
+              👷 {worker.name}
+            </h3>
 
-      ))}
+            <p><strong>ID:</strong> {worker.id}</p>
+
+            <p><strong>Contact:</strong> {worker.mobile || "N/A"}</p>
+
+            <p><strong>Emergency Contact:</strong> {worker.emergencyContact || "N/A"}</p>
+
+            <p>
+              <strong>Status:</strong>
+              <span style={{
+                marginLeft: "6px",
+                color:
+                  worker.status === "EMERGENCY"
+                    ? "red"
+                    : worker.status === "WARNING"
+                    ? "orange"
+                    : "lime"
+              }}>
+                {worker.status}
+              </span>
+            </p>
+
+            <p><strong>Work Status:</strong> {worker.workStatus}</p>
+
+            <hr style={{ margin: "10px 0", opacity: 0.2 }} />
+
+            <p>🧪 Oxygen: {worker.oxygen ?? "--"}</p>
+            <p>☣️ Toxic Gas: {worker.toxic ?? "--"}</p>
+
+          </div>
+
+        ))}
+
+      </div>
 
     </div>
   );
