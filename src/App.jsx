@@ -6,6 +6,7 @@ import SupervisorPage from "./pages/SupervisorPage";
 import SupervisorLogin from "./pages/SupervisorLogin";
 import AppInitializer from "./AppInitializer";
 import SupervisorWorkers from "./components/supervisor/SupervisorWorkers";
+import SupervisorDashboard from "./pages/supervisor/SupervisorDashboard";
 
 
 function App() {
@@ -19,7 +20,7 @@ function App() {
         <Route path="/supervisor" element={<SupervisorPage />} />
         <Route path="/supervisor-login" element={<SupervisorLogin />} />
         <Route path="/supervisor" element={<SupervisorPage />} />
-        <Route path="/supervisor-dashboard" element={<SupervisorDashboard />} />
+        {/* <Route path="/supervisor-dashboard" element={<SupervisorDashboard />} /> */}
         <Route path="/supervisor/workers" element={<SupervisorWorkers />} />
         <Route path="/supervisor-alerts" element={<AlertsPage />} />
         <Route path="/supervisor/dashboard" element={<SupervisorDashboard />} />
