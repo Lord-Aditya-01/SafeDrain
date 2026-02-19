@@ -48,12 +48,15 @@ module.exports = (io) => {
         socket.role = "worker";
         socket.workerId = workerId;
         workersState[workerId] = {
-          id: workerId,
-          workerId,
-          name: worker.name,
-          status: "NORMAL",
-          online: true
-        };
+        id: workerId,
+        workerId,
+        name: worker.name,
+        mobile: worker.mobile,
+        emergencyContact: worker.emergencyContact,
+        status: "NORMAL",
+        online: true
+      };
+
         socket.emit("worker-login-success", {
         workerId: worker.workerId,
         name: worker.name,

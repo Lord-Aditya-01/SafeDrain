@@ -3,35 +3,49 @@ import socket from "../../socket";
 
 const SupervisorWorkers = () => {
 
-  const [workers, setWorkers] = useState([]);
+  const [workers, setWorkers] = useState({});
+  const [search, setSearch] = useState("");
 
+  // Join supervisor room
   useEffect(() => {
 
     socket.emit("join-supervisor");
 
-    socket.on("initial-workers", (data) => {
-      setWorkers(data || []);
-    });
+    const handleInitialWorkers = (data) => {
 
-    socket.on("receive-location", (data) => {
+      const formatted = {};
 
-      setWorkers(prev => {
-        const exists = prev.find(w => w.id === data.id);
-
-        if (exists) {
-          return prev.map(w =>
-            w.id === data.id ? { ...w, ...data } : w
-          );
-        }
-
-        return [...prev, data];
+      data.forEach(worker => {
+        formatted[worker.id] = worker;
       });
 
-    });
+      setWorkers(formatted);
+    };
 
-    socket.on("worker-offline", ({ workerId }) => {
-      setWorkers(prev => prev.filter(w => w.id !== workerId));
-    });
+    const handleUpdate = (data) => {
+
+      setWorkers(prev => ({
+        ...prev,
+        [data.id]: {
+          ...prev[data.id],
+          ...data
+        }
+      }));
+    };
+
+    const handleOffline = ({ workerId }) => {
+
+      setWorkers(prev => {
+        const copy = { ...prev };
+        delete copy[workerId];
+        return copy;
+      });
+
+    };
+
+    socket.on("initial-workers", handleInitialWorkers);
+    socket.on("receive-location", handleUpdate);
+    socket.on("worker-offline", handleOffline);
 
     return () => {
       socket.off("initial-workers");
@@ -41,71 +55,60 @@ const SupervisorWorkers = () => {
 
   }, []);
 
+  // ⭐ SEARCH FILTER
+  const filteredWorkers = Object.values(workers).filter(worker =>
+    worker.name?.toLowerCase().includes(search.toLowerCase()) ||
+    worker.workerId?.toLowerCase().includes(search.toLowerCase())
+  );
+
   return (
 
     <div style={{ padding: "20px" }}>
 
-      <h2 style={{ marginBottom: "20px" }}>Active Workers</h2>
+      <h2>Active Workers</h2>
 
-      <div style={{
-        display: "grid",
-        gridTemplateColumns: "repeat(auto-fit, minmax(280px,1fr))",
-        gap: "16px"
-      }}>
+      {/* 🔥 SEARCH INPUT */}
+      <input
+        type="text"
+        placeholder="Search by name or ID..."
+        value={search}
+        onChange={(e) => setSearch(e.target.value)}
+        style={{
+          padding: "10px",
+          marginBottom: "20px",
+          width: "300px",
+          borderRadius: "8px"
+        }}
+      />
 
-        {workers.map(worker => (
+      {filteredWorkers.map(worker => (
 
-          <div
-            key={worker.id}
-            style={{
-              background: "#020617",
-              padding: "18px",
-              borderRadius: "12px",
-              border: "1px solid #1e293b",
-              boxShadow: "0 0 12px rgba(0,0,0,0.4)"
-            }}
-          >
+        <div key={worker.id} className="worker-card">
 
-            <h3 style={{ marginBottom: "8px" }}>
-              👷 {worker.name}
-            </h3>
+          <h3>👷 {worker.name}</h3>
 
-            <p><strong>ID:</strong> {worker.id}</p>
+          <p>ID: {worker.workerId}</p>
+          <p>Contact: {worker.mobile || "N/A"}</p>
+          <p>Emergency Contact: {worker.emergencyContact || "N/A"}</p>
 
-            <p><strong>Contact:</strong> {worker.mobile || "N/A"}</p>
+          <p>Status:
+            <span style={{ color: worker.status === "EMERGENCY" ? "red" : "green" }}>
+              {" "}{worker.status}
+            </span>
+          </p>
 
-            <p><strong>Emergency Contact:</strong> {worker.emergencyContact || "N/A"}</p>
+          <p>Work Status: {worker.workStatus}</p>
 
-            <p>
-              <strong>Status:</strong>
-              <span style={{
-                marginLeft: "6px",
-                color:
-                  worker.status === "EMERGENCY"
-                    ? "red"
-                    : worker.status === "WARNING"
-                    ? "orange"
-                    : "lime"
-              }}>
-                {worker.status}
-              </span>
-            </p>
+          {worker.oxygen && <p>🧪 Oxygen: {worker.oxygen}</p>}
+          {worker.toxic && <p>☣ Toxic Gas: {worker.toxic}</p>}
 
-            <p><strong>Work Status:</strong> {worker.workStatus}</p>
+        </div>
 
-            <hr style={{ margin: "10px 0", opacity: 0.2 }} />
-
-            <p>🧪 Oxygen: {worker.oxygen ?? "--"}</p>
-            <p>☣️ Toxic Gas: {worker.toxic ?? "--"}</p>
-
-          </div>
-
-        ))}
-
-      </div>
+      ))}
 
     </div>
   );
+
 };
 
 export default SupervisorWorkers;
