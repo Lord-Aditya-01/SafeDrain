@@ -175,6 +175,14 @@ module.exports = (io) => {
         "receive-location",
         workersState[id]
       );
+
+        io.to("supervisors").emit("new-alert", {
+        type: "SOS",
+        workerId: id,
+        name: workersState[id].name,
+        message: "SOS Emergency Activated",
+        time: Date.now()
+      });
     });
 
     // ===============================

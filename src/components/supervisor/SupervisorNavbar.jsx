@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
 import socket from "../../socket";
+import { NavLink } from "react-router-dom";
 
 const SupervisorNavbar = () => {
   const navigate = useNavigate();
@@ -23,18 +24,18 @@ const SupervisorNavbar = () => {
       </div>
 
       <div className="nav-right">
-        <button onClick={() => navigate("/supervisor-dashboard")}>
+        <button onClick={() => navigate("/supervisor/dashboard")}>
           Dashboard
         </button>
 
-        <button onClick={() => navigate("/supervisor-workers")}>
-          Workers
-        </button>
+        <NavLink to="/supervisor/workers">
+          <button>Workers</button>
+        </NavLink>
 
-        <button onClick={() => navigate("/supervisor-alerts")}>
+        <button onClick={() => navigate("/supervisor/alerts")}>
           Alerts
         </button>
-        
+
         <button
           className="logout-btn"
           onClick={handleLogout}
