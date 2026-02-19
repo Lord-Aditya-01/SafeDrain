@@ -85,7 +85,6 @@ const SupervisorDashboard = () => {
 
   return (
     <div className="supervisor-dashboard">
-      <SupervisorNavbar />
 
       <div className="supervisor-content">
 
@@ -105,7 +104,6 @@ const SupervisorDashboard = () => {
 
       </div>
 
-      <SupervisorFooter />
       <div>Live Tracking</div>
     </div>
   );
