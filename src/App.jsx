@@ -12,7 +12,7 @@ import AppInitializer from "./AppInitializer";
 import SupervisorWorkers from "./components/supervisor/SupervisorWorkers";
 import SupervisorDashboard from "./components/supervisor/SupervisorDashboard";
 import SupervisorAlerts from "./components/supervisor/SupervisorAlerts"; // ⭐ MISSING IMPORT
-
+import SupervisorLayout from "./pages/supervisor/SupervisorLayout";
 function App() {
   return (
     <BrowserRouter>
