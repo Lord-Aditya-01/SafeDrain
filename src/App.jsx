@@ -31,7 +31,7 @@ function App() {
         <Route path="/supervisor-dashboard" element={<SupervisorDashboard />} />
         <Route path="/supervisor/workers" element={<SupervisorWorkers />} />
         <Route path="/supervisor/alerts" element={<SupervisorAlerts />} />
-
+        <Route path="/supervisor/dashboard" element={<SupervisorDashboard />} />
       </Routes>
     </BrowserRouter>
   );
