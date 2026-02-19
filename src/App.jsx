@@ -19,6 +19,10 @@ function App() {
         <Route path="/supervisor" element={<SupervisorPage />} />
         <Route path="/supervisor-login" element={<SupervisorLogin />} />
         <Route path="/supervisor" element={<SupervisorPage />} />
+        <Route path="/supervisor-dashboard" element={<SupervisorDashboard />} />
+        <Route path="/supervisor-workers" element={<WorkersPage />} />
+        <Route path="/supervisor-alerts" element={<AlertsPage />} />
+
       </Routes>
     </BrowserRouter>
   );

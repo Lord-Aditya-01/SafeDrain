@@ -23,9 +23,18 @@ const SupervisorNavbar = () => {
       </div>
 
       <div className="nav-right">
-        <button>Dashboard</button>
-        <button>Workers</button>
-        <button>Alerts</button>
+        <button onClick={() => navigate("/supervisor-dashboard")}>
+          Dashboard
+        </button>
+
+        <button onClick={() => navigate("/supervisor-workers")}>
+          Workers
+        </button>
+
+        <button onClick={() => navigate("/supervisor-alerts")}>
+          Alerts
+        </button>
+        
         <button
           className="logout-btn"
           onClick={handleLogout}
