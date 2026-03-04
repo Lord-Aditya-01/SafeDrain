@@ -1,3 +1,8 @@
+SafeDrain is a real-time web platform to improve safety of sanitation workers with live GPS tracking, gas monitoring, SOS alerts, and supervisor monitoring dashboard. Worker site: https://safe-drain.vercel.app
+Supervisor dashboard: https://safe-drain.vercel.app/supervisor
+Current Supervisor id: supervisor | password: admin123
+Backend status: https://safedrain.onrender.com/
+
 # React + Vite
 
 This template provides a minimal setup to get React working in Vite with HMR and some ESLint rules.
