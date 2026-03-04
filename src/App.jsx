@@ -21,22 +21,20 @@ function App() {
 
       <Routes>
 
-        {/* Worker Routes */}
         <Route path="/" element={<HomePage />} />
-        <Route path="/signup" element={<WorkerSignup />} />
-        <Route path="/worker" element={<WorkerLogin />} />
 
-        {/* Supervisor Login */}
+        <Route path="/worker-login" element={<WorkerLogin />} />
+        <Route path="/worker" element={<WorkerPage />} />
+        <Route path="/signup" element={<WorkerSignup />} />
+
         <Route path="/supervisor-login" element={<SupervisorLogin />} />
-        {/* Supervisor Layout + Nested Routes */}
+
         <Route path="/supervisor" element={<SupervisorLayout />}>
-          {/* Default redirect */}
           <Route index element={<Navigate to="dashboard" />} />
           <Route path="dashboard" element={<SupervisorDashboard />} />
           <Route path="workers" element={<SupervisorWorkers />} />
           <Route path="alerts" element={<SupervisorAlerts />} />
         </Route>
-
 
       </Routes>
     </BrowserRouter>

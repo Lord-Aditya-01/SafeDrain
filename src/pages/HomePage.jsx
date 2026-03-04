@@ -28,7 +28,7 @@ const HomePage = () => {
 
         <div style={{ marginTop: "25px" }}>
           <button
-            onClick={() => navigate("/worker")}
+            onClick={() => navigate("/worker-login")}
             style={btnStyle}
           >
             Worker Login
@@ -99,7 +99,7 @@ const HomePage = () => {
 
         <Section
           title="Team"
-          text="Developed by Aditya and Team – Computer Engineering Students"
+          text="Developed by NIKARANA Team – Computer Engineering Students"
         />
 
       </div>
