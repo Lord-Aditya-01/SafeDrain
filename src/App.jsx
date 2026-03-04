@@ -3,7 +3,7 @@ import { Navigate } from "react-router-dom";
 import WorkerLogin from "./pages/WorkerLogin";
 import WorkerSignup from "./pages/WorkerSignup";
 import WorkerPage from "./pages/WorkerPage";
-
+import HomePage from "./pages/HomePage";
 import SupervisorPage from "./pages/SupervisorPage";
 import SupervisorLogin from "./pages/SupervisorLogin";
 
@@ -22,9 +22,9 @@ function App() {
       <Routes>
 
         {/* Worker Routes */}
-        <Route path="/" element={<WorkerLogin />} />
+        <Route path="/" element={<HomePage />} />
         <Route path="/signup" element={<WorkerSignup />} />
-        <Route path="/worker" element={<WorkerPage />} />
+        <Route path="/worker" element={<WorkerLogin />} />
 
         {/* Supervisor Login */}
         <Route path="/supervisor-login" element={<SupervisorLogin />} />
