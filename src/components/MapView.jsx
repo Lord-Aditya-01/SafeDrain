@@ -1,6 +1,7 @@
 import { MapContainer, TileLayer, GeoJSON } from "react-leaflet";
 import { useEffect, useState } from "react";
 import "leaflet/dist/leaflet.css";
+import L from "leaflet";
 
 function MapView() {
 
@@ -19,7 +20,22 @@ function MapView() {
         url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
       />
 
-      {manholes && <GeoJSON data={manholes} />}
+      {manholes && <GeoJSON
+      data={manholes}
+      pointToLayer={(feature, latlng) =>
+        L.circleMarker(latlng, {
+          radius: 4,
+          fillColor: "black",
+          color: "black",
+          weight: 1,
+          opacity: 1,
+          fillOpacity: 0.9,
+        })
+      }
+      onEachFeature={(feature, layer) => {
+        layer.bindPopup("Manhole ID: " + (feature.properties.id || "N/A"));
+      }}
+    />}
       
     </MapContainer>
   );
