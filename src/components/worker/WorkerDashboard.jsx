@@ -6,9 +6,11 @@ import WorkStatus from "./WorkStatus";
 import "./worker.css";
 import { useEffect, useState } from "react";
 import socket from "../../socket";
+import ManholeNavigator from "./ManholeNavigator";
 
 const WorkerDashboard = () => {
-
+  const [position, setPosition] = useState([18.6770, 73.8987]);
+  const [manholes, setManholes] = useState(null);
   const [worker, setWorker] = useState(null);
 
   useEffect(() => {
@@ -37,8 +39,17 @@ const WorkerDashboard = () => {
 
         {/* GPS tracking handled inside LocationMap */}
         
-        <LocationMap />
-
+        <LocationMap
+          position={position}
+          setPosition={setPosition}
+          manholes={manholes}
+          setManholes={setManholes}
+        />
+        {/* ✅ ADD HERE */}
+        <ManholeNavigator
+          position={position}
+          manholes={manholes}
+        />
         <GasStatus />
 
         <SOSButton />
