@@ -3,6 +3,7 @@ import { useEffect, useState } from "react";
 import "../../services/leafletIconFix";
 import socket from "../../socket";
 import { CircleMarker} from "react-leaflet";
+import ManholeNavigator from "./ManholeNavigator";
 
 const RecenterMap = ({ position }) => {
   const map = useMap();
@@ -81,7 +82,10 @@ const LocationMap = () => {
       <div className="location-title">📍 Live Location</div>
 
       <div className="map-wrapper">
-
+        <ManholeNavigator
+            position={position}
+            manholes={manholes}
+          />
         <MapContainer
           center={position}
           zoom={18}
@@ -142,7 +146,7 @@ const LocationMap = () => {
                 </CircleMarker>
               );
             })}
-
+          
         </MapContainer>
 
       </div>
