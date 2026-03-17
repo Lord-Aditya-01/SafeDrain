@@ -2,7 +2,7 @@ import { MapContainer, TileLayer, Marker, Popup, Circle, GeoJSON, useMap } from 
 import { useEffect, useState } from "react";
 import "../../services/leafletIconFix";
 import socket from "../../socket";
-import { CircleMarker } from "react-leaflet";
+import { CircleMarker} from "react-leaflet";
 
 const RecenterMap = ({ position }) => {
   const map = useMap();
@@ -119,19 +119,27 @@ const LocationMap = () => {
           {/* Manholes Layer */}
           {manholes &&
             manholes.features.map((feature, index) => {
+
               const coords = feature.geometry.coordinates;
+              const id = feature.properties?.id || index + 1;
 
               return (
                 <CircleMarker
                   key={index}
-                  center={[coords[1], coords[0]]} // lat, lng
-                  radius={3}
+                  center={[coords[1], coords[0]]}
+                  radius={4}
                   pathOptions={{
                     color: "black",
                     fillColor: "black",
                     fillOpacity: 1
                   }}
-                />
+                >
+                  <Popup>
+                    <strong>Manhole ID:</strong> {id} <br />
+                    <strong>Lat:</strong> {coords[1].toFixed(5)} <br />
+                    <strong>Lng:</strong> {coords[0].toFixed(5)}
+                  </Popup>
+                </CircleMarker>
               );
             })}
 

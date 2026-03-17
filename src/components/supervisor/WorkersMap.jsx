@@ -9,7 +9,7 @@ import {
 import "../../services/leafletIconFix";
 import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
-import { CircleMarker } from "react-leaflet";
+import { CircleMarker,} from "react-leaflet";
 
 const normalIcon = new L.Icon({
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
@@ -118,22 +118,30 @@ const WorkersMap = ({ workers = [], selectedWorker }) => {
         <AutoCenter workers={validWorkers} />
         <FocusWorker worker={selectedWorker} />
 
-        {/* Manholes Layer */}
+        {/* Manholes Layer */}        
         {manholes &&
           manholes.features.map((feature, index) => {
+
             const coords = feature.geometry.coordinates;
+            const id = feature.properties?.id || index + 1;
 
             return (
               <CircleMarker
                 key={index}
-                center={[coords[1], coords[0]]} // lat, lng
-                radius={3}
+                center={[coords[1], coords[0]]}
+                radius={4}
                 pathOptions={{
                   color: "black",
                   fillColor: "black",
                   fillOpacity: 1
                 }}
-              />
+              >
+                <Popup>
+                  <strong>Manhole ID:</strong> {id} <br />
+                  <strong>Lat:</strong> {coords[1].toFixed(5)} <br />
+                  <strong>Lng:</strong> {coords[0].toFixed(5)}
+                </Popup>
+              </CircleMarker>
             );
           })}
 
