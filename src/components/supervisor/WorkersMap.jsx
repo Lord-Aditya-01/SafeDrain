@@ -3,11 +3,13 @@ import {
   TileLayer,
   Marker,
   Popup,
+  GeoJSON,
   useMap,
 } from "react-leaflet";
 import "../../services/leafletIconFix";
-import { useEffect, useRef } from "react";
+import { useEffect, useRef, useState } from "react";
 import L from "leaflet";
+import { CircleMarker,} from "react-leaflet";
 
 const normalIcon = new L.Icon({
   iconUrl: "https://unpkg.com/leaflet@1.9.4/dist/images/marker-icon.png",
@@ -31,15 +33,13 @@ const warningIcon = L.divIcon({
   iconAnchor: [8, 8],
 });
 
-
-// ✅ Safe coordinate check (VERY IMPORTANT)
+// ✅ Safe coordinate check
 const hasValidLocation = (worker) =>
   worker &&
   worker.lat !== undefined &&
   worker.lng !== undefined &&
   worker.lat !== null &&
   worker.lng !== null;
-
 
 // ======================
 // Focus selected worker
@@ -55,7 +55,6 @@ const FocusWorker = ({ worker }) => {
 
   return null;
 };
-
 
 // ======================
 // Auto center first worker
@@ -79,18 +78,26 @@ const AutoCenter = ({ workers }) => {
   return null;
 };
 
-
 // ======================
 // MAIN MAP
 // ======================
 const WorkersMap = ({ workers = [], selectedWorker }) => {
 
-  // ⭐ Prevent crash by filtering invalid workers
   const validWorkers = workers.filter(hasValidLocation);
+
+  const [manholes, setManholes] = useState(null);
+
+  // Load manholes GeoJSON
+  useEffect(() => {
+    fetch("/manholes.geojson")
+      .then((res) => res.json())
+      .then((data) => setManholes(data))
+      .catch((err) => console.error("Failed to load manholes", err));
+  }, []);
 
   return (
     <div style={{ height: "80vh", borderRadius: "12px", overflow: "hidden" }}>
-      
+
       {validWorkers.length === 0 && (
         <p style={{ color: "white", padding: "8px" }}>
           No workers live yet…
@@ -102,6 +109,7 @@ const WorkersMap = ({ workers = [], selectedWorker }) => {
         zoom={15}
         style={{ height: "100%", width: "100%" }}
       >
+
         <TileLayer
           attribution="© OpenStreetMap contributors"
           url="https://{s}.tile.openstreetmap.org/{z}/{x}/{y}.png"
@@ -110,9 +118,37 @@ const WorkersMap = ({ workers = [], selectedWorker }) => {
         <AutoCenter workers={validWorkers} />
         <FocusWorker worker={selectedWorker} />
 
+        {/* Manholes Layer */}        
+        {manholes &&
+          manholes.features.map((feature, index) => {
+
+            const coords = feature.geometry.coordinates;
+            const id = feature.properties?.id || index + 1;
+
+            return (
+              <CircleMarker
+                key={index}
+                center={[coords[1], coords[0]]}
+                radius={4}
+                pathOptions={{
+                  color: "black",
+                  fillColor: "black",
+                  fillOpacity: 1
+                }}
+              >
+                <Popup>
+                  <strong>Manhole ID:</strong> {id} <br />
+                  <strong>Lat:</strong> {coords[1].toFixed(5)} <br />
+                  <strong>Lng:</strong> {coords[0].toFixed(5)}
+                </Popup>
+              </CircleMarker>
+            );
+          })}
+
+        {/* Worker Markers */}
         {validWorkers.map((worker) => (
           <Marker
-            key={worker.id}   // ⭐ consistent key
+            key={worker.id}
             position={[worker.lat, worker.lng]}
             icon={
               worker.status === "EMERGENCY"
