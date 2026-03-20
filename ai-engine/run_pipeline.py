@@ -81,6 +81,116 @@ def load_and_merge_excel(file_path):
 # -------------------------------
 def main():
 
+<<<<<<< HEAD
+=======
+    # -------------------------------
+    # 🔥 DYNAMIC INPUT FILE
+    # -------------------------------
+    if len(sys.argv) > 1:
+        file_path = sys.argv[1]
+    else:
+        file_path = "data/Samved_input_Safe1.xlsx"
+
+    print(f"\nUsing input file: {file_path}")
+
+    # -------------------------------
+    # 1️⃣ Load & Merge Data
+    # -------------------------------
+    df = load_and_merge_excel(file_path)
+
+    # -------------------------------
+    # 2️⃣ Fetch Weather
+    # -------------------------------
+    print("\nFetching weather...")
+    weather = get_weather_data(file_path)
+    print("Weather Data:", weather)
+
+    # -------------------------------
+    # 3️⃣ Preprocess
+    # -------------------------------
+    print("\nPreprocessing...")
+    df = preprocess(df, weather)
+
+    # -------------------------------
+    # 4️⃣ ML Prediction
+    # -------------------------------
+    print("\nML Prediction...")
+    df = predict_risk(df)
+
+    # -------------------------------
+    # 5️⃣ Anomaly Detection
+    # -------------------------------
+    print("\nDetecting anomalies...")
+    df = detect_anomalies(df)
+
+    # -------------------------------
+    # 6️⃣ Rule Engine
+    # -------------------------------
+    print("\nApplying rules...")
+    df = apply_rules(df)
+
+    print("\nDEBUG INPUT TO FUSION:\n")
+    print(
+        df[
+            [
+                "gas_level_ppm",
+                "oxygen_level_percent",
+                "ventilation_condition",
+                "water_level_condition",
+            ]
+        ]
+    )
+    # -------------------------------
+    # 7️⃣ Final Fusion
+    # -------------------------------
+    print("\nFinal fusion...")
+    df = compute_final_risk(df)
+
+    df = compute_safety_decision(df)
+    # -------------------------------
+    # 8️⃣ OUTPUT DISPLAY
+    # -------------------------------
+    print("\nFINAL OUTPUT:\n")
+
+    output_cols = [
+        "ml_prediction",
+        "ml_confidence",
+        "anomaly_flag",
+        "rule_status",
+        "final_status",
+        "risk_score",
+        "risk_reason",
+    ]
+
+    print(df[output_cols].to_string(index=False))
+    print(
+        df[
+            [
+                "final_status",
+                "risk_score",
+                "entry_decision",
+                "safe_work_time_minutes",
+                "decision_reason",
+            ]
+        ]
+    )
+
+    print("\n")
+    print("\n")
+    print(
+        df[
+            [
+                "safe_work_time_minutes",
+            ]
+        ]
+    )
+
+    print("\n")
+    print("\n")
+    # -------------------------------
+    # 💾 SAVE OUTPUT (OPTIONAL)
+    # -------------------------------
+>>>>>>> ad878e7588954c041b7da05aab3c6b4f146f92c2
     try:
         if len(sys.argv) > 1:
             file_path = sys.argv[1]

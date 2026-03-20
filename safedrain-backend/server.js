@@ -15,6 +15,7 @@ const io = new Server(server, {
   }
 });
 
+// load socket logic
 require("./socket/socket")(io);
 
 // connect database
