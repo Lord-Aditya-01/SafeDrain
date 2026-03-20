@@ -127,28 +127,6 @@ module.exports = (io) => {
     );
   });
 
-
-    // ===============================
-    // ✅ GAS UPDATE
-    // ===============================
-
-    socket.on("worker-gas-update", (data) => {
-
-      const id = socket.workerId;
-      if (!id) return;
-
-      workersState[id] = {
-        ...workersState[id],
-        ...data
-      };
-
-      io.to("supervisors").emit(
-        "receive-location",
-        workersState[id]
-      );
-
-    });
-
     // ===============================
     // ✅ WORK STATUS UPDATE
     // ===============================

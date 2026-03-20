@@ -1,6 +1,5 @@
 import WorkerHeader from "./WorkerHeader";
 import LocationMap from "./LocationMap";
-import GasStatus from "./GasStatus";
 import SOSButton from "./SOSButton";
 import WorkStatus from "./WorkStatus";
 import "./worker.css";
@@ -12,22 +11,69 @@ const WorkerDashboard = () => {
   const [worker, setWorker] = useState(null);
 
   useEffect(() => {
-  socket.emit("get-worker-session");
-  const handleWorkerUpdate = (data) => {
-    setWorker(data);
-  };
-  socket.on("worker-session-data", handleWorkerUpdate);
-  return () => {
-    socket.off("worker-session-data", handleWorkerUpdate);
-  };
 
-}, []);
+    // ===============================
+    // ✅ STEP 1: LOAD FROM LOCAL STORAGE (FAST)
+    // ===============================
+    const localWorker = localStorage.getItem("worker");
 
+    if (localWorker) {
+      setWorker(JSON.parse(localWorker));
+    }
 
+    // ===============================
+    // ✅ STEP 2: ENSURE SOCKET CONNECTED
+    // ===============================
+    if (!socket.connected) {
+      socket.connect();
+    }
+
+    // ===============================
+    // ✅ STEP 3: GET LIVE SESSION DATA
+    // ===============================
+    socket.emit("get-worker-session");
+
+    const handleWorkerUpdate = (data) => {
+
+      if (!data) return;
+
+      setWorker(data);
+
+      // 🔥 update localStorage (important)
+      localStorage.setItem("worker", JSON.stringify(data));
+    };
+
+    socket.on("worker-session-data", handleWorkerUpdate);
+
+    // ===============================
+    // ✅ CLEANUP
+    // ===============================
+    return () => {
+      socket.off("worker-session-data", handleWorkerUpdate);
+    };
+
+  }, []);
+
+  // ===============================
+  // ⏳ LOADING STATE (IMPROVED UI)
+  // ===============================
   if (!worker) {
-    return <div>Loading worker data...</div>;
+    return (
+      <div style={{
+        height: "100vh",
+        display: "flex",
+        justifyContent: "center",
+        alignItems: "center",
+        fontSize: "18px"
+      }}>
+        👷 Loading Worker Dashboard...
+      </div>
+    );
   }
 
+  // ===============================
+  // ✅ MAIN UI
+  // ===============================
   return (
     <div className="worker-dashboard">
 
@@ -35,21 +81,23 @@ const WorkerDashboard = () => {
 
         <WorkerHeader worker={worker} />
 
-        {/* GPS tracking handled inside LocationMap */}
-        
+        {/* 📍 GPS tracking */}
         <LocationMap />
 
-        <GasStatus />
-
+        {/* 🚨 Emergency */}
         <SOSButton />
 
+        {/* 📋 Work status */}
         <WorkStatus />
 
-        <div>Worker Tracking Active</div>
+        <div style={{ marginTop: "10px", opacity: 0.7 }}>
+          Worker Tracking Active
+        </div>
 
       </div>
 
     </div>
   );
 };
+
 export default WorkerDashboard;
