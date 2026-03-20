@@ -192,8 +192,27 @@ def main():
         print("\nCould not save file:", e)
 
 
-# -------------------------------
-# ▶️ RUN
-# -------------------------------
 if __name__ == "__main__":
-    main()
+
+    try:
+        input_data = json.load(sys.stdin)
+        df = pd.DataFrame([input_data])
+    except:
+        df = pd.DataFrame([{}])
+
+    weather = {
+        "temperature_c": 30,
+        "humidity_percent": 50,
+        "rainfall_last_24h_mm": 0,
+    }
+
+    df = preprocess(df, weather)
+    df = predict_risk(df)
+    df = detect_anomalies(df)
+    df = apply_rules(df)
+    df = compute_final_risk(df)
+    df = compute_safety_decision(df)
+
+    result = df.iloc[0].to_dict()
+
+    print(json.dumps(result))

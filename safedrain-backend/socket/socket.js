@@ -1,8 +1,34 @@
 const Location = require("../models/Location");
 const Worker = require("../models/Worker");
-
+const { spawn } = require("child_process");
 const workersState = {}; // ⭐ MASTER LIVE WORKER STATE
+function runAI(workerData) {
+  return new Promise((resolve) => {
 
+    const py = spawn("python", ["../ai-engine/run_pipeline.py"]);
+
+    let result = "";
+
+    // send data to python
+    py.stdin.write(JSON.stringify(workerData));
+    py.stdin.end();
+
+    py.stdout.on("data", (data) => {
+      result += data.toString();
+    });
+
+    py.on("close", () => {
+      try {
+        const parsed = JSON.parse(result);
+        resolve(parsed);
+      } catch (e) {
+        console.log("AI ERROR:", e);
+        resolve(null);
+      }
+    });
+
+  });
+}
 module.exports = (io) => {
 
   io.on("connection", (socket) => {
@@ -176,16 +202,35 @@ module.exports = (io) => {
     // ✅ GAS UPDATE
     // ===============================
 
-    socket.on("worker-gas-update", (data) => {
+    socket.on("worker-gas-update", async (data) => {
 
       const id = socket.workerId;
       if (!id) return;
 
+      // STEP 1: update worker data
       workersState[id] = {
         ...workersState[id],
         ...data
       };
 
+      // STEP 2: RUN AI
+      const aiResult = await runAI(workersState[id]);
+
+      // STEP 3: attach AI results
+      if (aiResult) {
+        workersState[id] = {
+          ...workersState[id],
+
+          final_status: aiResult.final_status,
+          risk_score: aiResult.risk_score,
+          entry_decision: aiResult.entry_decision,
+          safe_work_time_minutes: aiResult.safe_work_time_minutes,
+          risk_reason: aiResult.risk_reason,
+          decision_reason: aiResult.decision_reason
+        };
+      }
+
+      // STEP 4: send to frontend
       io.to("supervisors").emit("receive-location", workersState[id]);
 
     });
@@ -208,7 +253,7 @@ module.exports = (io) => {
 
     });
 
-    // ===============================
+    // ======================7=========
     // ✅ SOS EMERGENCY
     // ===============================
 
